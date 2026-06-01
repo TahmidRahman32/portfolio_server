@@ -10,17 +10,17 @@ import { IAuthUser } from "../../interfaces/common";
 
 // ─── Extended Request Interface ──────────────────────────────────────────────
 
-declare global {
-   namespace Express {
-      interface Request {
-         user?: {
-            id: number;
-            email: string;
-            role: string;
-         };
-      }
-   }
-}
+// declare global {
+//    namespace Express {
+//       interface Request {
+//          user?: {
+//             id: number;
+//             email: string;
+//             role: string;
+//          };
+//       }
+//    }
+// }
 
 // ─── Error Response Helper ────────────────────────────────────────────────────
 
