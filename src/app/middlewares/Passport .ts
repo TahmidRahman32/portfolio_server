@@ -2,9 +2,11 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as GitHubStrategy } from "passport-github2";
-import { UserStatus } from "@prisma/client";
+// import { UserStatus } from "@prisma/client";
 import config from "../../config";
 import prisma from "../../config/db";
+import { UserStatus } from "../../generated/prisma/enums";
+// import prisma from "../../config/db";
 // import prisma from "../../../config/db";
 // import config from "../../../config";
 

@@ -1,10 +1,11 @@
 import express, { NextFunction, Request, Response } from "express";
 import { AuthController } from "./auth.controller";
 import auth from "../../middlewares/auth";
-import { Role } from "@prisma/client";
+// import { Role } from "@prisma/client";
 // import { userRole } from "@prisma/client";
 import passport from "passport";
 import config from "../../../config";
+import { Role } from "../../../generated/prisma/enums";
 
 const router = express.Router();
 

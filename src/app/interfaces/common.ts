@@ -1,6 +1,6 @@
 // import { userRole } from "../../generated/enums";
 
-import { Role } from "@prisma/client";
+// import { Role } from "@prisma/client";
 
 
 export type IAuthUser = {

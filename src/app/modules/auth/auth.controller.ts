@@ -5,7 +5,7 @@ import { AuthService } from "./auth.service";
 import httpStatus from "http-status";
 import config from "../../../config";
 import auth from "../../middlewares/auth";
-import { Role } from "@prisma/client";
+// import { Role } from "@prisma/client";
 import { setAuthCookie } from "../../helpers/setCookie";
 
 

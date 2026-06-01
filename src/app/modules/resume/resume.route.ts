@@ -3,7 +3,8 @@
 import { Router } from "express";
 import { resumeController } from "./resume.controller";
 import auth from "../../middlewares/auth";
-import { Role } from "@prisma/client";
+import { Role } from "../../../generated/prisma/enums";
+// import { Role } from "@prisma/client";
 // import { createResume, getResume, updateResume, deleteResume } from "../controllers/resumeController";
 
 
