@@ -1,4 +1,4 @@
-import "../src/app/middlewares/passports";
+
 import express, { Application, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
