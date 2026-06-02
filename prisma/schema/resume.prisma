@@ -28,18 +28,22 @@ model Certification {
 }
 
 model PersonalInfo {
-   id        String   @id @default(cuid())
-   resumeId  String   @unique
-   fullName  String
-   email     String
-   phone     String
-   address   String
-   linkedin  String?
-   github    String?
-   website   String?
-   createdAt DateTime @default(now())
-   updatedAt DateTime @updatedAt
-   resume    Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+   id          String   @id @default(cuid())
+   resumeId    String   @unique
+   fullName    String
+   email       String
+   phone       String
+   address     String
+   linkedin    String?
+   github      String?
+   website     String?
+   dateOfBirth String?
+   gender      String?
+   languages   String?
+   nationality String?
+   createdAt   DateTime @default(now())
+   updatedAt   DateTime @updatedAt
+   resume      Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
 
    @@index([resumeId])
    @@map("personal_infos")
