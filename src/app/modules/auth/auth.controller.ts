@@ -12,7 +12,7 @@ import { setAuthCookie } from "../../helpers/setCookie";
 
 const login = catchAsync(async (req: Request, res: Response) => {
    const result = await AuthService.login(req.body);
-   console.log(result, "login-add")
+   // console.log(result, "login-add")
    const { accessToken, refreshToken,} = result;
 
    res.cookie("accessToken", accessToken, {
@@ -137,52 +137,107 @@ const getMe = catchAsync(async (req: Request, res: Response) => {
 // });
 
 function setAuthCookies(res: Response, accessToken: string, refreshToken: string) {
-   res.cookie("accessToken", accessToken, {
-      secure: true,
+   // Check if we're in production or development
+   const isProduction = process.env.NODE_ENV === "production";
+   const isDevelopment = process.env.NODE_ENV === "development";
+
+   const cookieOptions = {
       httpOnly: true,
-      sameSite: "none",
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days in ms
-   });
+      // For production: use "none" (requires HTTPS)
+      // For development: use "lax" (works with HTTP)
+      sameSite: isProduction ? ("none" as const) : ("lax" as const),
+      // For production: require HTTPS
+      // For development: allow HTTP
+      secure: isProduction,
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+   };
+
+   // console.log(`🍪 Setting cookies with sameSite="${cookieOptions.sameSite}" secure=${cookieOptions.secure}`);
+
+   res.cookie("accessToken", accessToken, cookieOptions);
    res.cookie("refreshToken", refreshToken, {
-      secure: true,
-      httpOnly: true,
-      sameSite: "none",
-      maxAge: 90 * 24 * 60 * 60 * 1000, // 90 days in ms
+      ...cookieOptions,
+      maxAge: 90 * 24 * 60 * 60 * 1000, // 90 days
    });
 }
-
 // ── Google callback ────────────────────────────────────────────────────────────
 // GET /api/v1/auth/google/callback
-export const googleCallbackController = catchAsync(async (req: Request & { user?: any }, res: Response) => {
-   const user = req.user; // set by Passport after successful OAuth
+// ✅ FIXED: Google callback controller
+export const googleCallbackController = catchAsync(
+   async (req: Request & { user?: any }, res: Response) => {
+      const user = req.user;
 
-   if (!user) {
-      return res.redirect(`${config.frontend_url}/login?error=Google authentication failed`);
+      // console.log("✅ Google OAuth callback received");
+      // console.log("📌 User from Passport:", user);
+
+      if (!user) {
+         console.error("❌ No user object from Passport");
+         return res.redirect(
+            `${config.frontend_url}/login?error=Google+authentication+failed`
+         );
+      }
+
+      try {
+         // Call AuthService to handle OAuth login
+         const { accessToken, refreshToken } = await AuthService.oAuthLogin(user);
+
+         // console.log("✅ Tokens generated successfully");
+
+         // Set cookies
+         setAuthCookies(res, accessToken, refreshToken);
+
+         // Get redirect path from state parameter
+         // state was passed when initiating OAuth: passport.authenticate("google", { state: redirect })
+         const redirectPath = (req.query.state as string) || "/user/dashboard";
+
+         // console.log(`🔄 Redirecting to: ${config.frontend_url}${redirectPath}`);
+
+         // Redirect to frontend with success
+         res.redirect(`${config.frontend_url}${redirectPath}`);
+      } catch (error) {
+         console.error("❌ OAuth login error:", error);
+         res.redirect(
+            `${config.frontend_url}/login?error=OAuth+login+failed`
+         );
+      }
    }
+);
 
-   const { accessToken, refreshToken } = await AuthService.oAuthLogin(user);
-   setAuthCookies(res, accessToken, refreshToken);
+// ✅ FIXED: GitHub callback controller
+export const githubCallbackController = catchAsync(
+   async (req: Request & { user?: any }, res: Response) => {
+      const user = req.user;
 
-   // `state` carries the original redirect path the frontend passed
-   const redirectPath = (req.query.state as string) || "/user/dashboard";
-   res.redirect(`${config.frontend_url}${redirectPath}`); // ✅ Just redirect, no token in URL
-});
+     // console.log("✅ GitHub OAuth callback received");
+    //  console.log("📌 User from Passport:", user);
 
-// ── GitHub callback ────────────────────────────────────────────────────────────
-// GET /api/v1/auth/github/callback
- const githubCallbackController = catchAsync(async (req: Request & { user?: any }, res: Response) => {
-   const user = req.user;
+      if (!user) {
+         console.error("❌ No user object from Passport");
+         return res.redirect(
+            `${config.frontend_url}/login?error=GitHub+authentication+failed`
+         );
+      }
 
-   if (!user) {
-      return res.redirect(`${config.frontend_url}/login?error=GitHub authentication failed`);
+      try {
+         const { accessToken, refreshToken } = await AuthService.oAuthLogin(user);
+
+        // console.log("✅ Tokens generated successfully");
+
+         setAuthCookies(res, accessToken, refreshToken);
+
+         const redirectPath = (req.query.state as string) || "/user/dashboard";
+
+        // console.log(`🔄 Redirecting to: ${config.frontend_url}${redirectPath}`);
+
+         res.redirect(`${config.frontend_url}${redirectPath}`);
+      } catch (error) {
+         console.error("❌ OAuth login error:", error);
+         res.redirect(
+            `${config.frontend_url}/login?error=OAuth+login+failed`
+         );
+      }
    }
-
-   const { accessToken, refreshToken } = await AuthService.oAuthLogin(user);
-   setAuthCookies(res, accessToken, refreshToken);
-
-   const redirectPath = (req.query.state as string) || "/user/dashboard";
-   res.redirect(`${config.frontend_url}${redirectPath}`);
-});
+);
 
  
 

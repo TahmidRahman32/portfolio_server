@@ -39,7 +39,7 @@ const auth = (...roles: string[]) => {
             throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid token payload");
          }
 
-         console.log(verifyUser, "auth")
+         // console.log(verifyUser, "auth")
 
          req.user = verifyUser;
 

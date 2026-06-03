@@ -22,7 +22,7 @@ passport.use(
          callbackURL: `${config.google.callback_url}` as string,
       },
       async (_accessToken, _refreshToken, profile, done) => {
-         console.log(_accessToken,_refreshToken,profile,"check my google data")
+       //  console.log(_accessToken,_refreshToken,profile,"check my google data")
          try {
             const email = profile.emails?.[0]?.value || `${profile.id}@google.oauth`;
 
@@ -43,7 +43,7 @@ passport.use(
                   // password is intentionally null — OAuth users don't need one
                },
             });
-           console.log("checking user",user, " user done")
+         //  console.log("checking user",user, " user done")
             return done(null, user);
          } catch (err) {
             return done(err as Error);

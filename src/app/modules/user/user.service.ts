@@ -29,7 +29,7 @@ interface CreateUserData {
 }
 
 const createUser = async (userData: CreateUserData) => {
-   console.log(userData)
+ //  console.log(userData)
    if (!userData.first_name || !userData.last_name || !userData.email || !userData.password) {
       throw new Error("Missing required fields");
    }

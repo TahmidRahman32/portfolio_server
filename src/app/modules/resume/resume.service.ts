@@ -80,7 +80,7 @@ export interface ResumePayload {
  * @param payload - Resume data with all sections
  */
 export async function createResumeService(userId: string, payload: ResumePayload) {
-   console.log(payload, "resume payload", userId);
+// console.log(payload, "resume payload", userId);
 
    const parsed = resumeSchema.parse(payload); // Validate required fields
    if (!payload.summary || payload.summary.trim().length === 0) {

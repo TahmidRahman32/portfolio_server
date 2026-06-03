@@ -43,10 +43,10 @@ function getStatusCode(errorMessage: string): number {
  * Create a complete resume with all sections
  */
 async function createResume(req: Request & { user?: IUserPayload }, res: Response): Promise<void> {
-   console.log(req.user)
+  // console.log(req.user)
    try {
       const userId = req.user?.id;
-      console.log("Authenticated user ID:", userId);
+      // console.log("Authenticated user ID:", userId);
 
       // Authenticate user
       if (!userId) {
@@ -95,7 +95,7 @@ async function createResume(req: Request & { user?: IUserPayload }, res: Respons
  * Fetch the complete resume for authenticated user
  */
 async function getResume(req: Request & { user?: IUserPayload }, res: Response): Promise<void> {
-   console.log(req.user.email)
+  // console.log(req.user.email)
    try {
       const userId = req.user?.id;
 
