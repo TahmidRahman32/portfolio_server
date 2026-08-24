@@ -1,12 +1,9 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import catchAsync from "../../shared/catchAsync";
 import sendResponse from "../../shared/sendResponse";
 import { AuthService } from "./auth.service";
 import httpStatus from "http-status";
 import config from "../../../config";
-import auth from "../../middlewares/auth";
-// import { Role } from "@prisma/client";
-import { setAuthCookie } from "../../helpers/setCookie";
 
 
 
@@ -107,53 +104,17 @@ const getMe = catchAsync(async (req: Request, res: Response) => {
       data: result,
    });
 });
-
-// const googleCallbackController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-//    let redirectTo = req.query.state ? (req.query.state as string) : "";
-
-//    if (redirectTo.startsWith("/")) {
-//       redirectTo = redirectTo.slice(1);
-//    }
-
-//    // /booking => booking , => "/" => ""
-//    const user = req.user;
-
-//    if (!user) {
-//       throw new Error( "User Not Found");
-//    }
-
-//    const tokenInfo = auth(Role.USER);
-
-//    setAuthCookie(res, tokenInfo as any);
-
-//    // sendResponse(res, {
-//    //     success: true,
-//    //     statusCode: httpStatus.OK,
-//    //     message: "Password Changed Successfully",
-//    //     data: null,
-//    // })
-
-//    res.redirect(`${config.frontend_url}/${redirectTo}`);
-// });
-
 function setAuthCookies(res: Response, accessToken: string, refreshToken: string) {
    // Check if we're in production or development
-   const isProduction = process.env.NODE_ENV === "production";
-   const isDevelopment = process.env.NODE_ENV === "development";
+   const isProduction = config.node_env === "production";
+   
 
    const cookieOptions = {
       httpOnly: true,
-      // For production: use "none" (requires HTTPS)
-      // For development: use "lax" (works with HTTP)
       sameSite: isProduction ? ("none" as const) : ("lax" as const),
-      // For production: require HTTPS
-      // For development: allow HTTP
       secure: isProduction,
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
    };
-
-   // console.log(`🍪 Setting cookies with sameSite="${cookieOptions.sameSite}" secure=${cookieOptions.secure}`);
-
    res.cookie("accessToken", accessToken, cookieOptions);
    res.cookie("refreshToken", refreshToken, {
       ...cookieOptions,
@@ -166,9 +127,6 @@ function setAuthCookies(res: Response, accessToken: string, refreshToken: string
 export const googleCallbackController = catchAsync(
    async (req: Request & { user?: any }, res: Response) => {
       const user = req.user;
-
-      // console.log("✅ Google OAuth callback received");
-      // console.log("📌 User from Passport:", user);
 
       if (!user) {
          console.error("❌ No user object from Passport");
